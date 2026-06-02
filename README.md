@@ -51,6 +51,89 @@ UniversityTransportManagementSystem/
 - Persistent file storage for users, vehicles, routes, registrations, and bills
 - Uses `using namespace std;` consistently across all files
 
+## UML Diagram
+```
+[User]<>--(abstract)
+  id: string
+  name: string
+  email: string
+  password: string
+  +authenticate()
+  +getRole()
+  +display()
+
+[Student]--|> [User]
+  year: int
+  transportPass: TransportPass*
+  +hasTransportPass()
+  +getTransportPass()
+
+[Admin]--|> [User]
+
+[Vehicle]<>--(abstract)
+  id: string
+  model: string
+  capacity: int
+  assignedRouteId: string
+  +getType()
+  +display()
+
+[Bus]--|> [Vehicle]
+  hasAC: bool
+
+[Van]--|> [Vehicle]
+  hasLuggageSpace: bool
+
+[Route]
+  id: string
+  name: string
+  distance: double
+  assignedVehicleId: string
+  usageCount: int
+
+[TransportPass]
+  passId: string
+  studentId: string
+  routeId: string
+  status: string
+  bill: Bill
+  +approve()
+  +reject()
+  +cancel()
+
+[Bill]
+  billId: string
+  studentId: string
+  routeId: string
+  issueDate: string
+  dueDate: string
+  status: string
+  amount: double
+  lateFine: double
+  totalAmount: double
+  +calculateFee()
+  +applyLateFine()
+  << operator<< >>
+
+[Storage<T>] (template)
+  items: vector<T>
+  +add()
+  +remove()
+  +getAt()
+
+[TransportManager]
+  users: vector<User*>
+  vehicles: Storage<Vehicle*>
+  routes: Storage<Route*>
+  registrations: vector<TransportPass*>
+  bills: vector<Bill*>
+  +loadAllData()
+  +saveAllData()
+  +runMainMenu()
+```
+
+A `draw.io` version of this UML diagram is included in `UniversityTransportManagementSystem.drawio`.
+
 ## Build Instructions
 Use a C++11-compatible compiler such as `g++`.
 
