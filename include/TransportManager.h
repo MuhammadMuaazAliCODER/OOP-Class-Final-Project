@@ -4,24 +4,24 @@
 #include <string>
 #include <vector>
 #include "TemplateStorage.h"
-#include "User.h"
-#include "Student.h"
-#include "Admin.h"
-#include "Vehicle.h"
-#include "Bus.h"
-#include "Van.h"
-#include "Route.h"
-#include "TransportPass.h"
-#include "Bill.h"
 using namespace std;
 
-class TransportManager {
+class User;
+class Student;
+class Admin;
+class Vehicle;
+class Route;
+class TransportPass;
+class Bill;
+
+class TransportManager
+{
 private:
-    vector<User*> users;
-    Storage<Vehicle*> vehicles;
-    Storage<Route*> routes;
-    vector<TransportPass*> registrations;
-    vector<Bill*> bills;
+    vector<User *> users;
+    Storage<Vehicle *> vehicles;
+    Storage<Route *> routes;
+    vector<TransportPass *> registrations;
+    vector<Bill *> bills;
 
     const string usersFile;
     const string vehiclesFile;
@@ -43,16 +43,15 @@ private:
     void saveRegistrations();
     void saveBills();
 
-    User* findUserById(const string& id) const;
-    Student* findStudentById(const string& id) const;
-    Admin* findAdminById(const string& id) const;
-    Vehicle* findVehicleById(const string& id) const;
-    Route* findRouteById(const string& id) const;
-    TransportPass* findRegistrationByPassId(const string& passId) const;
-    TransportPass* findRegistrationByStudentId(const string& studentId) const;
-    int countApprovedBookings(const string& routeId) const;
-    void updateRouteUsage(const string& routeId);
-    vector<string> splitLine(const string& line, char delimiter) const;
+    User *findUserById(const string &id) const;
+    Student *findStudentById(const string &id) const;
+    Admin *findAdminById(const string &id) const;
+    Vehicle *findVehicleById(const string &id) const;
+    Route *findRouteById(const string &id) const;
+    TransportPass *findRegistrationByPassId(const string &passId) const;
+    TransportPass *findRegistrationByStudentId(const string &studentId) const;
+    int countApprovedBookings(const string &routeId) const;
+    void updateRouteUsage(const string &routeId);
     string generatePassId() const;
     string generateBillId() const;
 
@@ -72,10 +71,10 @@ private:
     void adminGenerateReports();
     void adminSaveData();
 
-    void studentViewRoutes(Student* student) const;
-    void studentApplyForTransport(Student* student);
-    void studentViewRegistration(Student* student) const;
-    void studentCancelRegistration(Student* student);
+    void studentViewRoutes(Student *student) const;
+    void studentApplyForTransport(Student *student);
+    void studentViewRegistration(Student *student) const;
+    void studentCancelRegistration(Student *student);
 
 public:
     TransportManager();
@@ -87,3 +86,4 @@ public:
 };
 
 #endif // TRANSPORTMANAGER_H
+

@@ -4,18 +4,19 @@
 #include "Vehicle.h"
 using namespace std;
 
-class Bus : public Vehicle {
+class Bus : public Vehicle
+{
 private:
     bool hasAC;
 
 public:
     Bus();
-    Bus(const string& id,
-        const string& model,
+    Bus(const string &id,
+        const string &model,
         int capacity,
         bool hasAC);
-    Bus(const Bus& other);
-    Bus& operator=(const Bus& other);
+    Bus(const Bus &other);
+    Bus &operator=(const Bus &other);
     virtual ~Bus();
 
     bool getHasAC() const;
@@ -23,7 +24,8 @@ public:
 
     virtual string getType() const override;
     virtual void display() const override;
-    virtual Vehicle* clone() const override;
+    virtual Vehicle *clone() const override;
 };
 
 #endif // BUS_H
+

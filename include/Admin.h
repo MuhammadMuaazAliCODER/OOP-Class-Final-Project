@@ -5,15 +5,16 @@
 #include <string>
 using namespace std;
 
-class Admin : public User {
+class Admin : public User
+{
 public:
     Admin();
-    Admin(const string& id,
-          const string& name,
-          const string& email,
-          const string& password);
-    Admin(const Admin& other);
-    Admin& operator=(const Admin& other);
+    Admin(const string &id,
+          const string &name,
+          const string &email,
+          const string &password);
+    Admin(const Admin &other);
+    Admin &operator=(const Admin &other);
     virtual ~Admin();
 
     virtual string getRole() const override;
@@ -21,3 +22,4 @@ public:
 };
 
 #endif // ADMIN_H
+

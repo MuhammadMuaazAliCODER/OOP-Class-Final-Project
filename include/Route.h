@@ -4,7 +4,8 @@
 #include <string>
 using namespace std;
 
-class Route {
+class Route
+{
 private:
     string id;
     string name;
@@ -14,11 +15,11 @@ private:
 
 public:
     Route();
-    Route(const string& id,
-          const string& name,
+    Route(const string &id,
+          const string &name,
           double distance);
-    Route(const Route& other);
-    Route& operator=(const Route& other);
+    Route(const Route &other);
+    Route &operator=(const Route &other);
     ~Route();
 
     string getId() const;
@@ -27,11 +28,12 @@ public:
     string getAssignedVehicleId() const;
     int getUsageCount() const;
 
-    void setName(const string& name);
+    void setName(const string &name);
     void setDistance(double distance);
-    void setAssignedVehicleId(const string& vehicleId);
+    void setAssignedVehicleId(const string &vehicleId);
     void clearAssignedVehicle();
     void incrementUsage();
 };
 
 #endif // ROUTE_H
+

@@ -7,27 +7,28 @@ using namespace std;
 
 class TransportPass;
 
-class Student : public User {
+class Student : public User
+{
 private:
     int year;
-    TransportPass* transportPass;
+    TransportPass *transportPass;
 
 public:
     Student();
-    Student(const string& id,
-            const string& name,
-            const string& email,
-            const string& password,
+    Student(const string &id,
+            const string &name,
+            const string &email,
+            const string &password,
             int year);
-    Student(const Student& other);
-    Student& operator=(const Student& other);
+    Student(const Student &other);
+    Student &operator=(const Student &other);
     virtual ~Student();
 
     int getYear() const;
     void setYear(int year);
 
-    TransportPass* getTransportPass() const;
-    void setTransportPass(TransportPass* pass);
+    TransportPass *getTransportPass() const;
+    void setTransportPass(TransportPass *pass);
     void clearTransportPass();
     bool hasTransportPass() const;
 
@@ -36,3 +37,4 @@ public:
 };
 
 #endif // STUDENT_H
+

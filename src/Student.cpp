@@ -1,5 +1,5 @@
-#include "Student.h"
-#include "TransportPass.h"
+#include "../include/Student.h"
+#include "../include/TransportPass.h"
 #include <iostream>
 using namespace std;
 

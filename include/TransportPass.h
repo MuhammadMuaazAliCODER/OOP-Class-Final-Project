@@ -5,7 +5,8 @@
 #include "Bill.h"
 using namespace std;
 
-class TransportPass {
+class TransportPass
+{
 private:
     string passId;
     string studentId;
@@ -16,12 +17,12 @@ private:
 
 public:
     TransportPass();
-    TransportPass(const string& passId,
-                  const string& studentId,
-                  const string& routeId,
-                  const string& status);
-    TransportPass(const TransportPass& other);
-    TransportPass& operator=(const TransportPass& other);
+    TransportPass(const string &passId,
+                  const string &studentId,
+                  const string &routeId,
+                  const string &status);
+    TransportPass(const TransportPass &other);
+    TransportPass &operator=(const TransportPass &other);
     ~TransportPass();
 
     string getPassId() const;
@@ -29,8 +30,8 @@ public:
     string getRouteId() const;
     string getStatus() const;
 
-    void setStatus(const string& status);
-    void assignBill(const Bill& bill);
+    void setStatus(const string &status);
+    void assignBill(const Bill &bill);
     bool hasBill() const;
     Bill getBill() const;
 
@@ -40,3 +41,4 @@ public:
 };
 
 #endif // TRANSPORTPASS_H
+
