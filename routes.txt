@@ -1,0 +1,2 @@
+R001,East Campus,8,,0
+R002,West Campus,12.5,V200,1
