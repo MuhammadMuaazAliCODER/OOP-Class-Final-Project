@@ -66,6 +66,7 @@ private:
     void adminAddRoute();
     void adminAssignVehicle();
     void adminViewApplications();
+    void adminVehiclesDashboard();
     void adminApproveRequest();
     void adminRejectRequest();
     void adminGenerateReports();

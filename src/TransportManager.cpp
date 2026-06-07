@@ -12,6 +12,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
 TransportManager::TransportManager()
@@ -722,6 +723,78 @@ void TransportManager::adminViewApplications()
     displayApplications();
 }
 
+void TransportManager::adminVehiclesDashboard()
+{
+    cout << "\n=== Vehicles Dashboard ===" << endl;
+
+    int totalVehicles = 0;
+    int availableVehicles = 0;
+    int partiallyBooked = 0;
+    int fullyBooked = 0;
+
+    // Summary header
+    cout << left << setw(12) << "Vehicle ID" << setw(20) << "Name/Number" << setw(12) << "Route" << setw(10) << "Capacity" << setw(10) << "Occupied" << setw(10) << "Available" << setw(16) << "Status" << endl;
+    cout << string(90, '-') << endl;
+
+    for (Vehicle *vehicle : vehicles.getAll())
+    {
+        totalVehicles++;
+        string vid = vehicle->getId();
+        string vname = vehicle->getModel();
+        string routeId = vehicle->getAssignedRouteId();
+        int capacity = vehicle->getCapacity();
+
+        int bookings = 0;
+        if (!routeId.empty())
+        {
+            bookings = countApprovedBookings(routeId);
+        }
+
+        // Count how many vehicles are assigned to this route to distribute bookings
+        int vehiclesForRoute = 0;
+        if (!routeId.empty())
+        {
+            for (Vehicle *v2 : vehicles.getAll())
+            {
+                if (v2->getAssignedRouteId() == routeId)
+                    vehiclesForRoute++;
+            }
+        }
+
+        int seatsOccupied = 0;
+        if (capacity > 0 && vehiclesForRoute > 0)
+        {
+            seatsOccupied = (bookings + vehiclesForRoute - 1) / vehiclesForRoute; // evenly distribute (ceil)
+            if (seatsOccupied > capacity)
+                seatsOccupied = capacity;
+        }
+
+        int seatsAvailable = capacity - seatsOccupied;
+        double percent = capacity > 0 ? (100.0 * seatsOccupied) / capacity : 0.0;
+        string status;
+        if (seatsOccupied == 0)
+        {
+            status = "Available";
+            availableVehicles++;
+        }
+        else if (percent >= 100.0)
+        {
+            status = "Fully Booked";
+            fullyBooked++;
+        }
+        else
+        {
+            status = "Partially Booked";
+            partiallyBooked++;
+        }
+
+        cout << left << setw(12) << vid << setw(20) << vname << setw(12) << (routeId.empty() ? string("None") : routeId) << setw(10) << capacity << setw(10) << seatsOccupied << setw(10) << seatsAvailable << setw(16) << status << endl;
+    }
+
+    cout << string(90, '-') << endl;
+    cout << "Summary: Total=" << totalVehicles << " | Available=" << availableVehicles << " | Partially Booked=" << partiallyBooked << " | Fully Booked=" << fullyBooked << endl;
+}
+
 void TransportManager::adminApproveRequest()
 {
     cout << "\n=== Approve Transport Request ===" << endl;
@@ -1028,12 +1101,13 @@ void TransportManager::runMainMenu()
                     cout << "3. Remove Vehicle" << endl;
                     cout << "4. Add Route" << endl;
                     cout << "5. Assign Vehicle" << endl;
-                    cout << "6. View Applications" << endl;
-                    cout << "7. Approve Request" << endl;
-                    cout << "8. Reject Request" << endl;
-                    cout << "9. Generate Reports" << endl;
-                    cout << "10. Save Data" << endl;
-                    cout << "11. Logout" << endl;
+                    cout << "6. Vehicles Dashboard" << endl;
+                    cout << "7. View Applications" << endl;
+                    cout << "8. Approve Request" << endl;
+                    cout << "9. Reject Request" << endl;
+                    cout << "10. Generate Reports" << endl;
+                    cout << "11. Save Data" << endl;
+                    cout << "12. Logout" << endl;
                     cout << "Select an option: ";
                     int adminChoice;
                     cin >> adminChoice;
@@ -1056,21 +1130,24 @@ void TransportManager::runMainMenu()
                         adminAssignVehicle();
                         break;
                     case 6:
-                        adminViewApplications();
+                        adminVehiclesDashboard();
                         break;
                     case 7:
-                        adminApproveRequest();
+                        adminViewApplications();
                         break;
                     case 8:
-                        adminRejectRequest();
+                        adminApproveRequest();
                         break;
                     case 9:
-                        adminGenerateReports();
+                        adminRejectRequest();
                         break;
                     case 10:
-                        adminSaveData();
+                        adminGenerateReports();
                         break;
                     case 11:
+                        adminSaveData();
+                        break;
+                    case 12:
                         loggedOut = true;
                         break;
                     default:

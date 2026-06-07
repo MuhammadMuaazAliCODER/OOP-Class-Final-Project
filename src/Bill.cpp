@@ -92,7 +92,7 @@ void Bill::applyLateFine(int daysLate) {
 }
 
 ostream &operator<<(ostream &out, const Bill &bill) {
-    out << "Bill ID: " << bill.billId << '\n';
+    out << "Bill ID: " << bill.billId << '\n'; 
     out << "Student ID: " << bill.studentId << '\n';
     out << "Route ID: " << bill.routeId << '\n';
     out << "Issue Date: " << bill.issueDate << '\n';
