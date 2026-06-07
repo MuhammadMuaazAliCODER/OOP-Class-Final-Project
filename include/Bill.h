@@ -2,12 +2,8 @@
 #define BILL_H
 
 #include <string>
+#include <ostream>
 using namespace std;
-
-namespace std
-{
-    class ostream;
-}
 
 class Bill
 {

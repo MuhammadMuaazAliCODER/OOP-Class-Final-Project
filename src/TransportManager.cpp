@@ -1,4 +1,13 @@
 #include "../include/TransportManager.h"
+#include "../include/User.h"
+#include "../include/Admin.h"
+#include "../include/Student.h"
+#include "../include/Vehicle.h"
+#include "../include/Bus.h"
+#include "../include/Van.h"
+#include "../include/Route.h"
+#include "../include/TransportPass.h"
+#include "../include/Bill.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
