@@ -1,0 +1,327 @@
+# University Transport Management System - Input Validation & User Guide
+
+## Overview
+This document outlines all valid inputs, validation rules, Regex patterns, and examples for the transport management system.
+
+---
+
+## 1. USER REGISTRATION & LOGIN
+
+### Student ID
+- **Format**: Alphanumeric, starts with 'S' followed by numbers
+- **Regex**: ^S\d{4,}$
+- **Valid Examples**: S1001, S2022, S99999
+- **Invalid Examples**: 1001 (missing 'S'), SA001 (has letters), S001 (too short)
+- **Constraints**: 
+  - Must be unique in the system
+  - Cannot be modified after creation
+  - Length: 5-10 characters
+
+### Name (Student/Admin)
+- **Format**: Alphabetic characters and spaces only
+- **Regex**: ^[A-Za-z\s]+$
+- **Valid Examples**: John Doe, Sarah Smith, Alex Johnson
+- **Invalid Examples**: John123 (contains numbers), John@Doe (special chars), 123 John
+- **Constraints**:
+  - Minimum 2 characters
+  - Maximum 50 characters
+  - Leading/trailing spaces trimmed
+
+### Email
+- **Format**: Standard email format
+- **Regex**: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$
+- **Valid Examples**: john@example.com, student.id@university.edu, admin@transport.org
+- **Invalid Examples**: john@, @example.com, john.example.com (no @), john@.com
+- **Constraints**: 
+  - Maximum 100 characters
+  - Must contain @ and domain
+
+### Password
+- **Format**: Minimum 6 characters, alphanumeric
+- **Regex**: ^[a-zA-Z0-9]{6,}$
+- **Valid Examples**: password123, Admin@2026, secure123
+- **Invalid Examples**: pass (too short), pass! (contains special char), 12345 (too short)
+- **Constraints**:
+  - Minimum 6 characters
+  - Alphanumeric only (letters and numbers)
+
+### Student Year
+- **Valid Options**: 1, 2, 3, 4 (MENU SELECTION - no typing)
+- **Invalid Options**: 0, 5, -1, any non-integer
+- **Constraints**: First-year through fourth-year only
+
+---
+
+## 2. VEHICLE MANAGEMENT
+
+### Vehicle Type
+- **Valid Options**: Bus, Van (MENU SELECTION - no typing)
+- **Invalid Examples**: "Truck", "Auto", "Car", manual typing of other values
+- **Selection Method**: Arrow keys up/down + Enter to confirm
+
+### Vehicle ID
+- **Format**: 2-4 uppercase letters followed by 3+ numbers
+- **Regex**: ^[A-Z]{2,4}\d{3,}$
+- **Valid Examples**: BUS001, BUS002, BUS321, VAN001, VAN123, AB001, ABCD100
+- **Invalid Examples**: bus001 (lowercase), B001 (only 1 letter), BUS99 (only 2 digits), ABCDE001 (too many letters)
+- **Constraints**:
+  - Must be unique
+  - Cannot be modified after creation
+  - First 2-4 characters: vehicle type prefix (BUS/VAN or custom)
+  - Remaining: numeric ID (minimum 3 digits)
+
+### Model Name
+- **Format**: Alphanumeric with hyphens, spaces allowed
+- **Regex**: ^[A-Za-z0-9\s\-]{2,}$
+- **Valid Examples**: Toyota Hiace, Mercedes-Benz, Volvo B7R
+- **Invalid Examples**: !! (special chars), @ (invalid), empty string
+- **Constraints**:
+  - Minimum 2 characters
+  - Maximum 50 characters
+
+### Capacity
+- **Format**: Positive integer
+- **Regex**: ^\d+$
+- **Valid Examples**: 40, 25, 50 (for buses), 12, 8, 15 (for vans)
+- **Invalid Examples**: -25 (negative), 40.5 (decimal), abc, 0 (zero not allowed)
+- **Valid Range**: 5-100 passengers
+- **Constraints**: Must be greater than 0
+
+### Bus Feature: AC Option
+- **Valid Options**: Yes, No (MENU SELECTION - no typing)
+- **Selection Method**: Arrow keys up/down + Enter to confirm
+- **Determines**: Whether bus has air conditioning
+
+### Van Feature: Luggage Space
+- **Valid Options**: Yes, No (MENU SELECTION - no typing)
+- **Selection Method**: Arrow keys up/down + Enter to confirm
+- **Determines**: Whether van has additional luggage space
+
+### Assigned Route ID
+- **Format**: Alphanumeric, matches existing route
+- **Regex**: ^[A-Z]\d{3,}$
+- **Valid Examples**: R001, R201, A100
+- **Invalid Examples**: 001 (no letter prefix), route1 (lowercase), empty (no vehicle assignment)
+- **Constraints**:
+  - Must be an existing route ID
+  - One vehicle per route
+  - Leave empty if not assigned yet
+
+---
+
+## 3. ROUTE MANAGEMENT
+
+### Route ID
+- **Format**: Alphanumeric, starts with letter followed by numbers
+- **Regex**: ^[A-Z]\d{3,}$
+- **Valid Examples**: R001, R201, A100
+- **Invalid Examples**: r001 (lowercase), 001 (no letter), R01 (too few digits)
+- **Constraints**:
+  - Must be unique
+  - Cannot be modified after creation
+  - 4-6 characters
+
+### Route Name
+- **Format**: Alphanumeric with spaces and hyphens
+- **Regex**: ^[A-Za-z0-9\s\-]{3,}$
+- **Valid Examples**: City Center Route, North-South Line, Downtown Express
+- **Invalid Examples**: R1 (too short), !! (special chars only), (empty)
+- **Constraints**:
+  - Minimum 3 characters
+  - Maximum 50 characters
+
+### Distance (in km)
+- **Format**: Positive decimal number
+- **Regex**: ^\d+(\.\d{1,2})?$
+- **Valid Examples**: 15, 22.5, 10.75
+- **Invalid Examples**: -15 (negative), 22.555 (too many decimals), abc
+- **Valid Range**: 1 to 500 km
+- **Constraints**: Must be greater than 0, max 2 decimal places
+
+### Assigned Vehicle
+- **Selection Method**: MENU - displays available vehicles (OPTIONAL)
+- **Valid Options**: Unassigned or existing Vehicle ID
+- **Cannot be modified**: Once a vehicle is assigned to a route, both route and vehicle are locked
+
+---
+
+## 4. REGISTRATION & TRANSPORT PASSES
+
+### Pass ID
+- **Format**: Auto-generated (P + numeric ID)
+- **Examples**: P1, P2, P100
+- **User Input**: NOT ALLOWED - system generates automatically
+
+### Student ID (Registration)
+- **Format**: Must match existing Student ID
+- **Regex**: ^S\d{4,}$
+- **Valid Examples**: S1001, S2022
+- **Invalid Examples**: Invalid or non-existent IDs
+- **Constraints**: Must be existing student in system
+
+### Route Selection (Student Application)
+- **Selection Method**: MENU - displays all available routes
+- **Valid Options**: Unassigned routes with capacity available
+- **Constraints**:
+  - Route must have assigned vehicle
+  - Vehicle must have capacity
+  - Student can only have one active pass
+
+### Registration Status
+- **Valid Options**: Pending, Approved, Rejected, Cancelled (MENU for admin, auto-managed for students)
+- **Status Flow**: Pending → Approved/Rejected → (if Approved, later Cancelled)
+- **Constraints**: Only admin can change status
+
+---
+
+## 5. BILLING SYSTEM
+
+### Bill ID
+- **Format**: Auto-generated (B + numeric ID)
+- **Examples**: B1, B2, B100
+- **User Input**: NOT ALLOWED - system generates automatically
+
+### Bill Status
+- **Valid Options**: Unpaid, Paid, Overdue (MENU for admin)
+- **Valid Examples**: "Unpaid", "Paid", "Overdue"
+- **Invalid Examples**: "pending", "UNPAID", manual text entry
+- **Constraints**: Only admin can change status
+
+### Amount (Base Fare)
+- **Format**: Positive decimal, calculated as: 30 + (distance × 5)
+- **Examples**: 50.00, 75.50, 100.00
+- **User Input**: NOT ALLOWED - system calculates automatically
+- **Constraints**: Minimum 30 currency units
+
+### Late Fine
+- **Format**: Calculated as days late × 5
+- **Examples**: 0.00 (on time), 5.00 (1 day late), 25.00 (5 days late)
+- **User Input**: NOT ALLOWED - system calculates automatically
+
+### Issue Date & Due Date
+- **Format**: YYYY-MM-DD
+- **Regex**: ^\d{4}-\d{2}-\d{2}$
+- **Valid Examples**: 2026-06-01, 2026-12-31
+- **Invalid Examples**: 06/01/2026, 2026-6-1, 01-06-2026
+- **User Input**: NOT ALLOWED - system generates automatically
+
+---
+
+## 6. NAVIGATION & MENU SELECTION
+
+### Keyboard Controls
+- **Arrow Up** (↑): Move selection up
+- **Arrow Down** (↓): Move selection down
+- **Enter**: Confirm selection
+- **ESC** (optional): Cancel/go back
+
+### Menu Examples
+
+#### Example 1: Vehicle Type Selection
+```
+Select Vehicle Type:
+  > Bus
+    Van
+Press ↓ to move, Enter to select
+```
+
+#### Example 2: Route Selection
+```
+Select Route to Apply For:
+  > R001 - City Center (15 km)
+    R201 - North Line (22.5 km)
+    R100 - East Express (18 km)
+Press ↓ to move, Enter to select
+```
+
+---
+
+## 7. VALIDATION RULES SUMMARY
+
+### Always Menu-Based (No Typing):
+- Student Year (1, 2, 3, 4)
+- Vehicle Type (Bus, Van)
+- AC Option (Yes, No)
+- Luggage Space (Yes, No)
+- Status Options (when applicable)
+- Route Selection (from available list)
+- Vehicle Selection (from available list)
+
+### Always Auto-Generated (No User Input):
+- Pass ID
+- Bill ID
+- Amount calculation
+- Late fine calculation
+- Issue/Due dates
+
+### Requires Manual Input with Validation:
+- Student ID (Regex: ^S\d{4,}$)
+- Name (Regex: ^[A-Za-z\s]+$)
+- Email (Regex: ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)
+- Password (Regex: ^[a-zA-Z0-9]{6,}$)
+- Vehicle ID (Regex: ^[A-Z]{2}\d{3,}$)
+- Model Name (Regex: ^[A-Za-z0-9\s\-]{2,}$)
+- Capacity (Regex: ^\d+$, Range: 5-100)
+- Route ID (Regex: ^[A-Z]\d{3,}$)
+- Route Name (Regex: ^[A-Za-z0-9\s\-]{3,}$)
+- Distance (Regex: ^\d+(\.\d{1,2})?$, Range: 1-500)
+
+---
+
+## 8. ERROR PREVENTION STRATEGY
+
+### Before Input:
+1. Show valid options when possible
+2. Use menus with arrow key navigation
+3. Display format requirements clearly
+
+### During Input:
+1. Validate as user types (if applicable)
+2. Show real-time feedback
+3. Prevent invalid characters
+
+### After Input:
+1. Confirm valid data
+2. Show success message
+3. Proceed to next step
+
+### Never:
+- Accept invalid input
+- Show cryptic error messages
+- Force users to retry after errors
+- Accept manual text when menu would be better
+
+---
+
+## 9. IMPLEMENTATION NOTES
+
+- All string inputs trimmed of leading/trailing whitespace
+- Case sensitivity: IDs are case-sensitive, names/text can be flexible
+- Unique constraints: Student ID, User ID, Vehicle ID, Route ID must be unique
+- Dependencies: Vehicle needs valid ID format; Route needs valid ID format
+- Calculated fields: Amount, late fine, dates are auto-calculated, not user input
+
+---
+
+## 10. QUICK REFERENCE TABLE
+
+| Field | Input Method | Validation | Required |
+|-------|-------------|-----------|----------|
+| Student ID | Manual | Regex: ^S\d{4,}$ | Yes |
+| Name | Manual | Regex: ^[A-Za-z\s]+$ | Yes |
+| Email | Manual | Regex: email format | Yes |
+| Password | Manual | Min 6, alphanumeric | Yes |
+| Year | Menu | 1, 2, 3, 4 | Yes |
+| Vehicle Type | Menu | Bus, Van | Yes |
+| Vehicle ID | Manual | Regex: ^[A-Z]{2,4}\d{3,}$ | Yes |
+| Model | Manual | Alphanumeric + hyphens | Yes |
+| Capacity | Manual | Integer 5-100 | Yes |
+| AC Option | Menu | Yes, No | Yes (Bus) |
+| Route ID | Manual | Regex: ^[A-Z]\d{3,}$ | Yes |
+| Route Name | Manual | Alphanumeric + spaces/hyphens | Yes |
+| Distance | Manual | Decimal 1-500 km | Yes |
+| Status | Menu/Auto | Pending/Approved/etc | Auto |
+| Pass ID | Auto | Generated | Auto |
+| Bill ID | Auto | Generated | Auto |
+
+---

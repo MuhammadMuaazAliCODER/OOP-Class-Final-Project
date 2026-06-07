@@ -8,6 +8,7 @@
 #include "../include/Route.h"
 #include "../include/TransportPass.h"
 #include "../include/Bill.h"
+#include "../include/InputHelper.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -546,157 +547,174 @@ void TransportManager::displayReports() const
 
 void TransportManager::adminAddVehicle()
 {
-    string type;
-    cout << "Enter vehicle type (Bus/Van): ";
-    getline(cin, type);
-    string id, model;
-    int capacity;
-    cout << "Enter vehicle ID: ";
-    getline(cin, id);
-    cout << "Enter model name: ";
-    getline(cin, model);
-    cout << "Enter capacity: ";
-    cin >> capacity;
-    cin.ignore();
+    cout << "\n=== Add New Vehicle ===" << endl;
+
+    // Select vehicle type from menu
+    string type = InputHelper::selectVehicleType();
+
+    // Get validated vehicle ID
+    string id = InputHelper::getVehicleId("Enter Vehicle ID (e.g., BUS001, VAN123, BUS321): ");
 
     if (findVehicleById(id) != nullptr)
     {
-        cout << "A vehicle with this ID already exists." << endl;
+        cout << "Error: A vehicle with ID '" << id << "' already exists." << endl;
         return;
     }
 
+    // Get validated model name
+    string model = InputHelper::getModelName("Enter Model Name (e.g., Toyota Hiace): ");
+
+    // Get validated capacity
+    int capacity = InputHelper::getCapacity("Enter Capacity (5-100 passengers): ");
+
     if (type == "Bus")
     {
-        char acOption;
-        cout << "Does the bus have AC? (Y/N): ";
-        cin >> acOption;
-        cin.ignore();
-        bool hasAC = (acOption == 'Y' || acOption == 'y');
+        bool hasAC = InputHelper::selectYesNo("Does the bus have AC?");
         vehicles.add(new Bus(id, model, capacity, hasAC));
-        cout << "Bus added successfully." << endl;
+        cout << "✓ Bus added successfully!" << endl;
+        cout << "  ID: " << id << " | Model: " << model << " | Capacity: " << capacity << " | AC: " << (hasAC ? "Yes" : "No") << endl;
     }
     else if (type == "Van")
     {
-        char luggageOption;
-        cout << "Does the van have luggage space? (Y/N): ";
-        cin >> luggageOption;
-        cin.ignore();
-        bool luggage = (luggageOption == 'Y' || luggageOption == 'y');
-        vehicles.add(new Van(id, model, capacity, luggage));
-        cout << "Van added successfully." << endl;
-    }
-    else
-    {
-        cout << "Invalid vehicle type." << endl;
+        bool hasLuggage = InputHelper::selectYesNo("Does the van have luggage space?");
+        vehicles.add(new Van(id, model, capacity, hasLuggage));
+        cout << "✓ Van added successfully!" << endl;
+        cout << "  ID: " << id << " | Model: " << model << " | Capacity: " << capacity << " | Luggage: " << (hasLuggage ? "Yes" : "No") << endl;
     }
 }
 
 void TransportManager::adminEditVehicle()
 {
-    string id;
-    cout << "Enter vehicle ID to edit: ";
-    getline(cin, id);
-    Vehicle *vehicle = findVehicleById(id);
-    if (vehicle == nullptr)
+    cout << "\n=== Edit Vehicle ===" << endl;
+    displayVehicles();
+
+    vector<string> vehicleOptions;
+    vector<Vehicle *> availableVehicles;
+    for (Vehicle *v : vehicles.getAll())
     {
-        cout << "Vehicle not found." << endl;
+        vehicleOptions.push_back(v->getId() + " (" + v->getType() + " - " + v->getModel() + ")");
+        availableVehicles.push_back(v);
+    }
+
+    if (availableVehicles.empty())
+    {
+        cout << "No vehicles available to edit." << endl;
         return;
     }
 
-    string model;
-    int capacity;
-    cout << "Enter new model name: ";
-    getline(cin, model);
-    cout << "Enter new capacity: ";
-    cin >> capacity;
-    cin.ignore();
+    int index = InputHelper::selectFromMenu(vehicleOptions, "Select Vehicle to Edit:");
+    Vehicle *vehicle = availableVehicles[index];
+
+    string model = InputHelper::getModelName("Enter new Model Name: ");
+    int capacity = InputHelper::getCapacity("Enter new Capacity (5-100): ");
 
     vehicle->setModel(model);
     vehicle->setCapacity(capacity);
-    cout << "Vehicle updated successfully." << endl;
+    cout << "✓ Vehicle updated successfully!" << endl;
 }
 
 void TransportManager::adminRemoveVehicle()
 {
-    string id;
-    cout << "Enter vehicle ID to remove: ";
-    getline(cin, id);
-    Vehicle *vehicle = findVehicleById(id);
-    if (vehicle == nullptr)
+    cout << "\n=== Remove Vehicle ===" << endl;
+    displayVehicles();
+
+    vector<string> vehicleOptions;
+    vector<Vehicle *> availableVehicles;
+    for (Vehicle *v : vehicles.getAll())
     {
-        cout << "Vehicle not found." << endl;
+        vehicleOptions.push_back(v->getId() + " (" + v->getType() + " - " + v->getModel() + ")");
+        availableVehicles.push_back(v);
+    }
+
+    if (availableVehicles.empty())
+    {
+        cout << "No vehicles available to remove." << endl;
         return;
     }
 
+    int index = InputHelper::selectFromMenu(vehicleOptions, "Select Vehicle to Remove:");
+    Vehicle *vehicle = availableVehicles[index];
+
     if (!vehicle->getAssignedRouteId().empty())
     {
-        cout << "Cannot remove a vehicle assigned to a route." << endl;
+        cout << "Error: Cannot remove a vehicle assigned to a route." << endl;
         return;
     }
 
     vehicles.remove(vehicle);
     delete vehicle;
-    cout << "Vehicle removed." << endl;
+    cout << "✓ Vehicle removed successfully!" << endl;
 }
 
 void TransportManager::adminAddRoute()
 {
-    string id, name;
-    double distance;
-    cout << "Enter route ID: ";
-    getline(cin, id);
+    cout << "\n=== Add New Route ===" << endl;
+
+    string id = InputHelper::getRouteId("Enter Route ID (format: R### e.g., R001): ");
     if (findRouteById(id) != nullptr)
     {
-        cout << "A route with this ID already exists." << endl;
+        cout << "Error: A route with ID '" << id << "' already exists." << endl;
         return;
     }
 
-    cout << "Enter route name: ";
-    getline(cin, name);
-    cout << "Enter distance in km: ";
-    cin >> distance;
-    cin.ignore();
+    string name = InputHelper::getRouteName("Enter Route Name (e.g., City Center Route): ");
+    double distance = InputHelper::getDistance("Enter Distance in km (1-500): ");
 
     routes.add(new Route(id, name, distance));
-    cout << "Route created successfully." << endl;
+    cout << "✓ Route created successfully!" << endl;
+    cout << "  ID: " << id << " | Name: " << name << " | Distance: " << distance << " km" << endl;
 }
 
 void TransportManager::adminAssignVehicle()
 {
-    string vehicleId;
-    cout << "Enter vehicle ID to assign: ";
-    getline(cin, vehicleId);
-    Vehicle *vehicle = findVehicleById(vehicleId);
-    if (vehicle == nullptr)
+    cout << "\n=== Assign Vehicle to Route ===" << endl;
+
+    // Select unassigned vehicle
+    vector<string> unassignedVehicles;
+    vector<Vehicle *> availableVehicles;
+    for (Vehicle *v : vehicles.getAll())
     {
-        cout << "Vehicle not found." << endl;
+        if (v->getAssignedRouteId().empty())
+        {
+            unassignedVehicles.push_back(v->getId() + " (" + v->getType() + " - " + v->getModel() + ")");
+            availableVehicles.push_back(v);
+        }
+    }
+
+    if (availableVehicles.empty())
+    {
+        cout << "No unassigned vehicles available." << endl;
         return;
     }
 
-    string routeId;
-    cout << "Enter route ID to assign to: ";
-    getline(cin, routeId);
-    Route *route = findRouteById(routeId);
-    if (route == nullptr)
+    int vehicleIndex = InputHelper::selectFromMenu(unassignedVehicles, "Select Vehicle to Assign:");
+    Vehicle *vehicle = availableVehicles[vehicleIndex];
+
+    // Select route without assigned vehicle
+    vector<string> unassignedRoutes;
+    vector<Route *> availableRoutes;
+    for (Route *r : routes.getAll())
     {
-        cout << "Route not found." << endl;
+        if (r->getAssignedVehicleId().empty())
+        {
+            unassignedRoutes.push_back(r->getId() + " - " + r->getName() + " (" + to_string((int)r->getDistance()) + " km)");
+            availableRoutes.push_back(r);
+        }
+    }
+
+    if (availableRoutes.empty())
+    {
+        cout << "No routes available for assignment." << endl;
         return;
     }
 
-    if (!vehicle->getAssignedRouteId().empty())
-    {
-        cout << "Vehicle is already assigned to another route." << endl;
-        return;
-    }
-    if (!route->getAssignedVehicleId().empty())
-    {
-        cout << "Route already has a vehicle assigned." << endl;
-        return;
-    }
+    int routeIndex = InputHelper::selectFromMenu(unassignedRoutes, "Select Route to Assign To:");
+    Route *route = availableRoutes[routeIndex];
 
-    vehicle->setAssignedRouteId(routeId);
-    route->setAssignedVehicleId(vehicleId);
-    cout << "Vehicle assigned to route successfully." << endl;
+    vehicle->setAssignedRouteId(route->getId());
+    route->setAssignedVehicleId(vehicle->getId());
+    cout << "✓ Vehicle assigned to route successfully!" << endl;
+    cout << "  Vehicle: " << vehicle->getId() << " → Route: " << route->getId() << " (" << route->getName() << ")" << endl;
 }
 
 void TransportManager::adminViewApplications()
@@ -706,39 +724,53 @@ void TransportManager::adminViewApplications()
 
 void TransportManager::adminApproveRequest()
 {
-    string passId;
-    cout << "Enter pass ID to approve: ";
-    getline(cin, passId);
-    TransportPass *pass = findRegistrationByPassId(passId);
-    if (pass == nullptr)
+    cout << "\n=== Approve Transport Request ===" << endl;
+    displayApplications();
+
+    vector<string> pendingApplications;
+    vector<TransportPass *> pendingPasses;
+    for (TransportPass *pass : registrations)
     {
-        cout << "Transport request not found." << endl;
+        if (pass->getStatus() == "Pending")
+        {
+            Student *student = findStudentById(pass->getStudentId());
+            Route *route = findRouteById(pass->getRouteId());
+            string display = pass->getPassId() + " - Student: " + pass->getStudentId();
+            if (student)
+                display += " (" + student->getName() + ")";
+            display += " | Route: " + (route ? route->getName() : "Unknown");
+            pendingApplications.push_back(display);
+            pendingPasses.push_back(pass);
+        }
+    }
+
+    if (pendingPasses.empty())
+    {
+        cout << "No pending applications." << endl;
         return;
     }
-    if (pass->getStatus() != "Pending")
-    {
-        cout << "Only pending requests may be approved." << endl;
-        return;
-    }
+
+    int index = InputHelper::selectFromMenu(pendingApplications, "Select Application to Approve:");
+    TransportPass *pass = pendingPasses[index];
 
     Route *route = findRouteById(pass->getRouteId());
     if (route == nullptr || route->getAssignedVehicleId().empty())
     {
-        cout << "Route is not valid or does not have an assigned vehicle." << endl;
+        cout << "Error: Route is not valid or does not have an assigned vehicle." << endl;
         return;
     }
 
     Vehicle *vehicle = findVehicleById(route->getAssignedVehicleId());
     if (vehicle == nullptr)
     {
-        cout << "Assigned vehicle not found." << endl;
+        cout << "Error: Assigned vehicle not found." << endl;
         return;
     }
 
     int approvedCount = countApprovedBookings(route->getId());
     if (approvedCount >= vehicle->getCapacity())
     {
-        cout << "Cannot approve this request. The assigned vehicle is full." << endl;
+        cout << "Error: Cannot approve. The assigned vehicle is full." << endl;
         return;
     }
 
@@ -751,28 +783,44 @@ void TransportManager::adminApproveRequest()
     pass->assignBill(*newBill);
     bills.push_back(newBill);
 
-    cout << "Request approved and bill generated." << endl;
+    cout << "✓ Request approved successfully!" << endl;
+    cout << "  Pass: " << pass->getPassId() << " | Status: Approved | Bill Generated: " << newBill->getBillId() << endl;
 }
 
 void TransportManager::adminRejectRequest()
 {
-    string passId;
-    cout << "Enter pass ID to reject: ";
-    getline(cin, passId);
-    TransportPass *pass = findRegistrationByPassId(passId);
-    if (pass == nullptr)
+    cout << "\n=== Reject Transport Request ===" << endl;
+    displayApplications();
+
+    vector<string> pendingApplications;
+    vector<TransportPass *> pendingPasses;
+    for (TransportPass *pass : registrations)
     {
-        cout << "Transport request not found." << endl;
-        return;
+        if (pass->getStatus() == "Pending")
+        {
+            Student *student = findStudentById(pass->getStudentId());
+            Route *route = findRouteById(pass->getRouteId());
+            string display = pass->getPassId() + " - Student: " + pass->getStudentId();
+            if (student)
+                display += " (" + student->getName() + ")";
+            display += " | Route: " + (route ? route->getName() : "Unknown");
+            pendingApplications.push_back(display);
+            pendingPasses.push_back(pass);
+        }
     }
-    if (pass->getStatus() != "Pending")
+
+    if (pendingPasses.empty())
     {
-        cout << "Only pending requests may be rejected." << endl;
+        cout << "No pending applications." << endl;
         return;
     }
 
+    int index = InputHelper::selectFromMenu(pendingApplications, "Select Application to Reject:");
+    TransportPass *pass = pendingPasses[index];
+
     pass->reject();
-    cout << "Request rejected." << endl;
+    cout << "✓ Request rejected successfully!" << endl;
+    cout << "  Pass: " << pass->getPassId() << " | Status: Rejected" << endl;
 }
 
 void TransportManager::adminGenerateReports()
@@ -795,43 +843,48 @@ void TransportManager::studentApplyForTransport(Student *student)
 {
     if (student->hasTransportPass())
     {
-        cout << "You already have an application or registration." << endl;
+        cout << "Error: You already have an application or registration." << endl;
         return;
     }
 
-    string routeId;
-    cout << "Enter route ID to apply for: ";
-    getline(cin, routeId);
-    Route *route = findRouteById(routeId);
-    if (route == nullptr)
+    cout << "\n=== Apply for Transport ===" << endl;
+    displayRoutes();
+
+    // Build list of available routes
+    vector<string> availableRoutes;
+    vector<Route *> selectableRoutes;
+    for (Route *r : routes.getAll())
     {
-        cout << "Route not found." << endl;
-        return;
+        if (r->getAssignedVehicleId().empty())
+            continue;
+
+        Vehicle *vehicle = findVehicleById(r->getAssignedVehicleId());
+        if (vehicle == nullptr)
+            continue;
+
+        int approvedCount = countApprovedBookings(r->getId());
+        if (approvedCount >= vehicle->getCapacity())
+            continue;
+
+        availableRoutes.push_back(r->getId() + " - " + r->getName() + " (" + to_string((int)r->getDistance()) + " km) [" + 
+                                 to_string(approvedCount) + "/" + to_string(vehicle->getCapacity()) + " booked]");
+        selectableRoutes.push_back(r);
     }
-    if (route->getAssignedVehicleId().empty())
+
+    if (selectableRoutes.empty())
     {
-        cout << "This route does not have a vehicle assigned yet." << endl;
+        cout << "No available routes with capacity." << endl;
         return;
     }
 
-    Vehicle *vehicle = findVehicleById(route->getAssignedVehicleId());
-    if (vehicle == nullptr)
-    {
-        cout << "Assigned vehicle not found." << endl;
-        return;
-    }
+    int index = InputHelper::selectFromMenu(availableRoutes, "Select Route to Apply For:");
+    Route *route = selectableRoutes[index];
 
-    int approvedCount = countApprovedBookings(routeId);
-    if (approvedCount >= vehicle->getCapacity())
-    {
-        cout << "Cannot apply. The route is fully booked." << endl;
-        return;
-    }
-
-    TransportPass *pass = new TransportPass(generatePassId(), student->getId(), routeId, "Pending");
+    TransportPass *pass = new TransportPass(generatePassId(), student->getId(), route->getId(), "Pending");
     registrations.push_back(pass);
     student->setTransportPass(pass);
-    cout << "Application submitted successfully. Pass ID: " << pass->getPassId() << endl;
+    cout << "✓ Application submitted successfully!" << endl;
+    cout << "  Pass ID: " << pass->getPassId() << " | Route: " << route->getId() << " | Status: Pending" << endl;
 }
 
 void TransportManager::studentViewRegistration(Student *student) const
@@ -890,43 +943,42 @@ void TransportManager::runMainMenu()
         {
         case 1:
         {
-            string id, name, email, password;
-            int year;
-            cout << "Enter student ID: ";
-            getline(cin, id);
+            cout << "\n=== Student Registration ===" << endl;
+            string id = InputHelper::getStudentId("Enter Student ID (format: S#### e.g., S1001): ");
             if (findUserById(id) != nullptr)
             {
-                cout << "User ID already exists." << endl;
+                cout << "Error: User ID '" << id << "' already exists." << endl;
                 break;
             }
-            cout << "Enter name: ";
-            getline(cin, name);
-            cout << "Enter email: ";
-            getline(cin, email);
-            cout << "Enter password: ";
-            getline(cin, password);
-            cout << "Enter year of study: ";
-            cin >> year;
-            cin.ignore();
+            string name = InputHelper::getName("Enter Full Name: ");
+            string email = InputHelper::getEmail("Enter Email Address: ");
+            string password = InputHelper::getPassword("Enter Password (minimum 6 alphanumeric characters): ");
+            int year = InputHelper::selectYear();
 
             Student *student = new Student(id, name, email, password, year);
             users.push_back(student);
-            cout << "Student registered successfully." << endl;
+            cout << "✓ Student registered successfully!" << endl;
+            cout << "  ID: " << id << " | Name: " << name << " | Year: " << year << endl;
             break;
         }
         case 2:
         {
+            cout << "\n=== User Login ===" << endl;
             string id, password;
-            cout << "Enter user ID: ";
+            cout << "Enter User ID (or 'admin' for admin): ";
             getline(cin, id);
-            cout << "Enter password: ";
+            cout << "Enter Password: ";
             getline(cin, password);
+
             User *user = findUserById(id);
             if (user == nullptr || !user->authenticate(password))
             {
-                cout << "Invalid ID or password." << endl;
+                cout << "✗ Error: Invalid ID or password." << endl;
                 break;
             }
+
+            cout << "✓ Login successful! Welcome " << user->getName() << "." << endl;
+
             if (dynamic_cast<Student *>(user))
             {
                 bool loggedOut = false;
